@@ -28,24 +28,29 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
       
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       
       # 使用 package-lock.json 安装依赖
+      - name: Install dependencies
       # - run: npm ci
-      - run: npm install --platform=linux --arch=x64
+        run: npm install --platform=linux --arch=x64
       
       # 执行构建命令
+      - name: Build site
       # - run: npm run generate
-      - run: npm run build
-
-      - uses: actions/upload-pages-artifact@v3
+        run: npm run build
+        
+      # 上传构建产物
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          # 上传构建产物
           path: ".output/public"  
 
   deploy:
@@ -55,5 +60,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
         id: deployment
