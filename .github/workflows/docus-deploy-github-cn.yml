@@ -3,7 +3,7 @@
 # 2026-08-05
 
 # chat.deepseek.com/a/chat/s/64b7afd3-da7d-4e2f-8407-684a47511f88
-# #Docus 部署 GitHub Actions
+# Docus 部署 GitHub Actions
 
 name: Build & Deploy to GitHub Pages
 
@@ -59,6 +59,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
