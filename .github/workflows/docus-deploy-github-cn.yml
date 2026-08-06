@@ -1,0 +1,59 @@
+# docus-deploy-github-cn.yml
+# github.com/shenjuexiao
+# 2026-08-05
+
+# chat.deepseek.com/a/chat/s/64b7afd3-da7d-4e2f-8407-684a47511f88
+# #Docus 部署 GitHub Actions
+
+name: Build & Deploy to GitHub Pages
+
+on:
+  push:
+    # 当推送到 main 分支时触发
+    branches: [main]
+  workflow_dispatch:    
+
+# 设置部署所需的权限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 确保只有一个部署任务在运行，避免冲突
+concurrency:
+  group: "pages-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      
+      # 使用 package-lock.json 安装依赖
+      # - run: npm ci
+      - run: npm install --platform=linux --arch=x64
+      
+      # 执行构建命令
+      # - run: npm run generate
+      - run: npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          # 上传构建产物
+          path: ".output/public"  
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
